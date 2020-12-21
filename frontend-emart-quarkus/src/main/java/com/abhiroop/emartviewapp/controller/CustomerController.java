@@ -3,13 +3,11 @@ package com.abhiroop.emartviewapp.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClientException;
 
 import com.abhiroop.emartviewapp.model.Customer;
 import com.abhiroop.emartviewapp.model.ResponseObject;
@@ -29,17 +26,10 @@ import io.vertx.ext.web.RoutingContext;
 @RestController
 public class CustomerController {
 
-	
 	@RestClient
 	BackendServiceConsumer backendServiceConsumer;
 
-//	private String emartUserServiceUrl;
-
-	@ConfigProperty(name = "service.emart.url")
 	String emartUserServiceUrl;
-//	public void setServiceShoppingUrl(String url) {
-//		setEmartUserServiceUrl(url);
-//	}
 
 	@GET
 	@Path("/")
@@ -57,9 +47,9 @@ public class CustomerController {
 		try {
 			// listOfCustomers = restTemplate.getForObject(getEmartUserServiceUrl() +
 			// "getAllUsers/", List.class);
-			
+
 			listOfCustomers = backendServiceConsumer.getAllUsers();
-		} catch (RestClientException e) {
+		} catch (Exception e) {
 //			model.addAttribute("ERR", "No Connectivity with Back-end System");
 			System.out.println("Exception occurred at getAllCustomers =>" + e.getMessage());
 		}
@@ -79,7 +69,7 @@ public class CustomerController {
 			// String.class);
 			System.out.println("getConnectivityStatus service call ===> ");
 			connectivityStatus = backendServiceConsumer.getConnectivityStatus();
-			System.out.println("result after getConnectivityStatus service call = "+connectivityStatus);
+			System.out.println("result after getConnectivityStatus service call = " + connectivityStatus);
 			if ("UserData-service App is ready".equals(connectivityStatus)) {
 				serviceStatus = "UP";
 			}
@@ -97,8 +87,8 @@ public class CustomerController {
 		try {
 			// c = restTemplate.getForObject(getEmartUserServiceUrl() + "getUser/" + id,
 			// Customer.class);
-			c=backendServiceConsumer.getCustomerById(id);
-		} catch (RestClientException e) {
+			c = backendServiceConsumer.getCustomerById(id);
+		} catch (Exception e) {
 			System.out.println("Exception occurred at getCustomerById =>" + e.getMessage());
 		}
 
@@ -110,13 +100,13 @@ public class CustomerController {
 
 		String url = getEmartUserServiceUrl() + "addUser/";
 		try {
-			HttpHeaders headers = new HttpHeaders();
+//			HttpHeaders headers = new HttpHeaders();
 //			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<Customer> request = new HttpEntity<>(c, headers);
+//			HttpEntity<Customer> request = new HttpEntity<>(c, headers);
 //			ResponseEntity<Customer> response = restTemplate.exchange(url, HttpMethod.POST, request,	new ParameterizedTypeReference<Customer>() {	});
 			c = backendServiceConsumer.addCustomer(c);
 			// TODO
-		} catch (RestClientException e) {
+		} catch (Exception e) {
 			System.out.println("Exception occurred at getCustomerById =>" + e.getMessage());
 		}
 		return c;
@@ -135,20 +125,24 @@ public class CustomerController {
 	public ResponseObject deleteCustomer(@PathVariable("id") int id) {
 		ResponseObject r = new ResponseObject();
 		String result = "FAIL";
-		String uri = getEmartUserServiceUrl() + "deleteUser/" + id;
-		HttpHeaders headers = new HttpHeaders();
+		try {
+			String uri = getEmartUserServiceUrl() + "deleteUser/" + id;
+			HttpHeaders headers = new HttpHeaders();
 //		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		HttpEntity<Customer> entity = new HttpEntity<Customer>(headers);
+			HttpEntity<Customer> entity = new HttpEntity<Customer>(headers);
 //		result = restTemplate.exchange(uri, HttpMethod.DELETE, entity, String.class).getBody();
-		r.setMessage(result);
+			r.setMessage(result);
+		} catch (Exception e) {
+			System.out.println("Exception occurred at deleteCustomer =>" + e.getMessage());
+		}
 		System.out.println(result);
 		return r;
 	}
 
-//	@RequestMapping(value = "/health", method = RequestMethod.GET, headers = "Accept=application/json")
-	@GET
-	@Path("/health")
-	@Consumes(MediaType.APPLICATION_JSON)
+//	@GET
+//	@Path("/health")
+//	@Consumes(MediaType.APPLICATION_JSON)
+	@RequestMapping(value = "/health", method = RequestMethod.GET, headers = "Accept=application/json")
 	public String heartbeat() {
 		return "CustomerController is Ready to server Request";
 	}
@@ -158,3 +152,4 @@ public class CustomerController {
 	}
 
 }
+
