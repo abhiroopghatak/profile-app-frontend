@@ -42,7 +42,7 @@ class EmartViewAppTest {
 
 	@Test
 	public void givenMockingIsDoneByMockito_whenGetIsCalled_shouldReturnMockedObject() {
-		Customer c = new Customer("Eric Simmons", "erics@hcl.com");
+		Customer c = new Customer("Eric Simmons", "erics@me.com");
 		c.setId(1);
 		Mockito.when(rt.getForObject(cc.getEmartUserServiceUrl() + "getUser/1", Customer.class)).thenReturn(c);
 
