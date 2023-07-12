@@ -1,33 +1,19 @@
 
-FROM alpine/git
+##############################
+FROM adoptopenjdk/openjdk11:jre-11.0.7_10-ubuntu
 
-WORKDIR /app
-RUN git clone https://github.com/abhiroopghatak/emart-backend.git
+RUN echo "Docker build starts. Using adoptopenjdk/openjdk11:jre-11.0.7_10-ubuntu as base image"
 
-FROM maven:3.5-jdk-8-alpine
-WORKDIR /app
-COPY --from=0 /app/emart-backend /app
-RUN mvn install
+RUN echo "maintained by : Abhiroop Ghatak => abhiroop.g@hcl.com"
 
-FROM openjdk:8-jre-alpine
-WORKDIR /app
-COPY --from=1 /app/target/emart-backend-service-0.0.1-SNAPSHOT.jar /app
+RUN apt install curl
+
+
+WORKDIR /usr/app
+
+RUN curl  -u abhiroop:Mala#123 -o emart-backend-service-0.0.1-SNAPSHOT.jar "http://nxrm-sonatype-nexus-nexus.apps.ocpibmcloud.cnpocp.local/repository/maven-snapshots/com/abhiroop/emart/emart-backend/0.0.1-SNAPSHOT/emart-backend-service-0.0.1-SNAPSHOT.jar"
+
+EXPOSE 8080
 CMD java -jar emart-backend-service-0.0.1-SNAPSHOT.jar
-
-#USER root
-
-#COPY my-ldap-ca-bundle.crt /usr/local/share/ca-certificates/my-ldap-ca-bundle.crt
-#RUN update-ca-certificates
-
-
-#COPY my-ldap-ca-bundle.crt $JAVA_HOME/jre/lib/security/
-#RUN \
-#    cd $JAVA_HOME/jre/lib/security \
-#    && $JAVA_HOME/bin/keytool -keystore cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias ldapcert -file my-ldap-ca-bundle.crt
-
-#Adding dynatrace server certificate
-#ADD dynacert.crt /usr/local/share/ca-certificates/dynacert.cert
-#RUN chmod 644 /usr/local/share/ca-certificates/dynacert.cert
-#RUN update-ca-certificates
 
 USER 1005
