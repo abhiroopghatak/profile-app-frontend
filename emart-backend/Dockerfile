@@ -2,7 +2,7 @@
 FROM alpine/git
 
 WORKDIR /app
-RUN git clone https://github.com/abhiroopghatak/emart-backend.git
+RUN git clone https://github.com/abhiroopghatak/emart-app.git
 
 FROM maven:3.5-jdk-8-alpine
 WORKDIR /app
