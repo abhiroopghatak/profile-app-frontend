@@ -25,7 +25,7 @@ spec:
   type: git
   params:
     - name: url
-      value: https://github.com/robipozzi/windfire-restaurants-node
+      value: https://github.com/abhiroopghatak/emart-app
     - name: revision
       value: master
 ---
